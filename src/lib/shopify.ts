@@ -304,10 +304,19 @@ export async function customerAddressDelete(accessToken: string, id: string) {
 export async function getAuthorizationUrl() {
   const clientId = import.meta.env
     .VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID
-  if (!storeDomain || !clientId || storeDomain === 'YOUR_API_KEY') {
+  const redirectUri = import.meta.env.VITE_PUBLIC_REDIRECT_URI
+
+  if (
+    !storeDomain ||
+    !clientId ||
+    !redirectUri ||
+    storeDomain === 'YOUR_API_KEY' ||
+    redirectUri === 'YOUR_API_KEY'
+  ) {
     console.error('Auth variables not configured')
     return '/'
   }
+
   const discoveryResponse = await fetch(
     `https://${storeDomain}/.well-known/openid-configuration`
   )
@@ -319,10 +328,7 @@ export async function getAuthorizationUrl() {
   )
   authorizationRequestUrl.searchParams.append('client_id', clientId)
   authorizationRequestUrl.searchParams.append('response_type', 'code')
-  authorizationRequestUrl.searchParams.append(
-    'redirect_uri',
-    `${window.location.origin}/auth/callback`
-  )
+  authorizationRequestUrl.searchParams.append('redirect_uri', redirectUri)
   authorizationRequestUrl.searchParams.append('state', '12345')
   authorizationRequestUrl.searchParams.append('nonce', '67890')
   return authorizationRequestUrl.toString()

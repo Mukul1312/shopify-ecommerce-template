@@ -33,7 +33,7 @@ const AuthCallback = () => {
               grant_type: 'authorization_code',
               client_id: import.meta.env
                 .VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID,
-              redirect_uri: `${window.location.origin}/auth/callback`,
+              redirect_uri: import.meta.env.VITE_PUBLIC_REDIRECT_URI,
               code,
             }),
           })

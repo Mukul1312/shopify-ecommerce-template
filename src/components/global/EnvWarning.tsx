@@ -6,6 +6,7 @@ export function EnvWarning() {
     import.meta.env.VITE_PUBLIC_SHOPIFY_STORE_DOMAIN &&
     import.meta.env.VITE_PUBLIC_SHOPIFY_STOREFRONT_TOKEN &&
     import.meta.env.VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID &&
+    import.meta.env.VITE_PUBLIC_REDIRECT_URI &&
     import.meta.env.VITE_PUBLIC_SHOPIFY_STORE_DOMAIN !== 'YOUR_API_KEY'
 
   if (isConfigured) {

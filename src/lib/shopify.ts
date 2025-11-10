@@ -1,3 +1,5 @@
+import { generateCodeVerifier, generateCodeChallenge } from './pkce';
+
 const storefrontAccessToken = import.meta.env
   .VITE_PUBLIC_SHOPIFY_STOREFRONT_TOKEN
 const storeDomain = import.meta.env.VITE_PUBLIC_SHOPIFY_STORE_DOMAIN
@@ -136,13 +138,12 @@ export async function getFeaturedProducts() {
   return data.collection.products.edges.map((edge: any) => edge.node)
 }
 
-// ... (other functions using storefront or customerAccount will now be more resilient)
-
 export async function getCustomer(accessToken: string) {
   const { data, errors } = await customerAccount(
     `
     query getCustomer {
       customer {
+        id
         firstName
         lastName
         emailAddress {
@@ -317,21 +318,39 @@ export async function getAuthorizationUrl() {
     return '/'
   }
 
-  const discoveryResponse = await fetch(
-    `https://${storeDomain}/.well-known/openid-configuration`
-  )
-  const authConfig = await discoveryResponse.json()
-  const authorizationRequestUrl = new URL(authConfig.authorization_endpoint)
-  authorizationRequestUrl.searchParams.append(
-    'scope',
-    'openid email https://api.shopify.com/auth/shop.customers.read https://api.shopify.com/auth/shop.customers.write'
-  )
-  authorizationRequestUrl.searchParams.append('client_id', clientId)
-  authorizationRequestUrl.searchParams.append('response_type', 'code')
-  authorizationRequestUrl.searchParams.append('redirect_uri', redirectUri)
-  authorizationRequestUrl.searchParams.append('state', '12345')
-  authorizationRequestUrl.searchParams.append('nonce', '67890')
-  return authorizationRequestUrl.toString()
+  try {
+    const discoveryResponse = await fetch(
+      `https://${storeDomain}/.well-known/openid-configuration`
+    )
+    const authConfig = await discoveryResponse.json()
+    const authorizationEndpoint = authConfig.authorization_endpoint
+
+    const verifier = generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
+    sessionStorage.setItem('code-verifier', verifier);
+
+    const authorizationRequestUrl = new URL(authorizationEndpoint)
+    authorizationRequestUrl.searchParams.append(
+      'scope',
+      'openid email https://api.shopify.com/auth/shop.customers.read https://api.shopify.com/auth/shop.customers.write'
+    )
+    authorizationRequestUrl.searchParams.append('client_id', clientId)
+    authorizationRequestUrl.searchParams.append('response_type', 'code')
+    authorizationRequestUrl.searchParams.append('redirect_uri', redirectUri)
+    // TODO: Replace with a random, unguessable string for CSRF protection
+    authorizationRequestUrl.searchParams.append('state', '12345')
+    // TODO: Replace with a random, unguessable string for replay attack protection
+    authorizationRequestUrl.searchParams.append('nonce', '67890')
+    
+    // PKCE parameters
+    authorizationRequestUrl.searchParams.append('code_challenge', challenge);
+    authorizationRequestUrl.searchParams.append('code_challenge_method', 'S256');
+
+    return authorizationRequestUrl.toString()
+  } catch (error) {
+    console.error("Failed to get authorization URL", error);
+    return '/';
+  }
 }
 
 export async function customerRecover(email: string) {

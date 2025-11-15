@@ -1,0 +1,31 @@
+steps:
+  - id: step1_open_env_modal
+    type: highlight
+    target: 'env-variables-button'
+    title: "Add Environment Variables"
+    content: "First, let's add your Shopify credentials. Click here to open the variables modal."
+    
+  - id: step2_fill_storefront_token
+    type: help-card
+    target: 'VITE_PUBLIC_SHOPIFY_STOREFRONT_TOKEN'
+    title: "Get VITE_PUBLIC_SHOPIFY_STOREFRONT_TOKEN"
+    content: "Install the Headless channel from the Shopify App Store. After installation, click Create storefront. Navigate to the Storefront API section and copy the Public access token. Important: While you're there, ensure all Storefront API permissions are checked and granted for full functionality."
+
+  - id: step3_fill_customer_api_client_id
+    type: help-card
+    target: 'VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID'
+    title: "Get VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID"
+    content: "This requires enabling customer accounts and configuring the Headless channel. Part A: Enable Customer Accounts. In your Shopify admin, go to Settings > Customer accounts. Click Edit in the 'Accounts in online store and checkout' section. Choose Show login link and select New customer accounts. Save your changes. Part B: Configure Headless Channel. Go to the Headless sales channel in your Shopify admin. Navigate to Customer Account API settings. In the Application setup section, add your callback URI and Javascript Origin to Callback URL(s). This is the value of your VITE_PUBLIC_REDIRECT_URI. Example: https://YOUR_NETLIFY_DOMAIN.netlify.app/auth/callback. From the Credentials section, copy the Client ID. This is your VITE_PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID."
+    media: "https://cdn.shopify.com/shopifycloud/shopify-dev/production/assets/assets/images/custom-storefronts/customer-accounts-setting-DznrL2OL.png"
+
+  - id: step4_fill_store_domain
+    type: help-card
+    target: 'VITE_PUBLIC_SHOPIFY_STORE_DOMAIN'
+    title: "Get VITE_PUBLIC_SHOPIFY_STORE_DOMAIN"
+    content: "In your Shopify admin, go to Settings > Domains. Copy your primary domain, which looks like YOUR_DOMAIN.myshopify.com."
+
+  - id: step5_publish_site
+    type: highlight
+    target: 'publish-button'
+    title: "Publish Your Site"
+    content: "All variables are set! Now you're ready to deploy your website to the world."
